@@ -12,3 +12,10 @@ type Task struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
+
+func (t *Task) AssignedToOrZero() int64 {
+	if t.AssignedTo == nil {
+		return 0
+	}
+	return *t.AssignedTo
+}
