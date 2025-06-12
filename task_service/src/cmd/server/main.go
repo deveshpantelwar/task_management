@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 	"task_management/task_service/src/internal/adaptors/external"
-	"task_management/task_service/src/internal/adaptors/persistence"
+
 	"task_management/task_service/src/internal/adaptors/persistence/redis"
+	persistence "task_management/task_service/src/internal/adaptors/persistence/task_repo"
 	"task_management/task_service/src/internal/interfaces/input/api/rest/handler"
 	"task_management/task_service/src/internal/interfaces/input/api/rest/middleware"
 	"task_management/task_service/src/internal/interfaces/input/api/rest/routes"
@@ -28,7 +29,7 @@ func main() {
 	taskUC := usecase.NewTaskUsecase(taskRepo, publisher)
 	taskHandler := handler.NewTaskHandler(taskUC)
 
-	userClient := external.NewUserServiceClient("localhost:50051") 
+	userClient := external.NewUserServiceClient("localhost:50051")
 	authMiddleware := middleware.NewAuthMiddleware(userClient)
 
 	r := routes.InitRoutes(taskHandler, authMiddleware)

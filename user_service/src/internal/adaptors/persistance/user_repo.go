@@ -88,7 +88,6 @@ func (ur *UserRepo) UpdateUser(ctx context.Context, user *session.RegisterRespon
 		return err
 	}
 
-	// fmt.Printf("Trying to update user: username=%s, email=%s, password=%s\n", user.UserName, user.Email, user.Password)
 	fmt.Println("New user details : ", newData)
 
 	if rowsAffected == 0 {
@@ -111,4 +110,16 @@ func (u *UserRepo) GetUserByToken(token string) (bool, error) {
 	}
 
 	return exists, nil
+}
+
+func (u *UserRepo) Login(ctx context.Context, input *session.RegisterResponse) (*session.RegisterResponse, error) {
+	query := `SELECT uid, username, email FROM users WHERE username = $1`
+	row := u.db.db.QueryRowContext(ctx, query, input.UserName)
+
+	var user session.RegisterResponse
+	if err := row.Scan(&user.UID, &user.UserName, &user.Email); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
