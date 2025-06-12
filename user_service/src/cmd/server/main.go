@@ -3,12 +3,17 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"task-management/user-service/src/internal/adaptors/persistance"
 	"task-management/user-service/src/internal/config"
 	"task-management/user-service/src/internal/interfaces/input/api/rest/handler"
 	"task-management/user-service/src/internal/interfaces/input/api/rest/routes"
+	"task-management/user-service/src/internal/interfaces/input/grpc/grpcserver"
+	"task-management/user-service/src/internal/interfaces/input/grpc/user"
 	"task-management/user-service/src/internal/usecase"
+
+	"google.golang.org/grpc"
 )
 
 const (
@@ -31,9 +36,23 @@ func main() {
 	userUsecase := usecase.NewUserService(userRepository, config.JWT_SECRET)
 	userHandler := handler.NewUserHandler(userUsecase)
 
-	
+	router := routes.InitRoutes(userHandler, config.JWT_SECRET)
 
-	router := routes.InitRoutes(userHandler)
+	grpcServer := grpc.NewServer()
+	grpcHandler := grpcserver.NewUserGRPCServer(userUsecase)
+
+	user.RegisterUserServiceServer(grpcServer, grpcHandler)
+	go func() {
+		lis, err := net.Listen("tcp", ":50051")
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+
+		log.Println("user_service gRPC server running at :50051")
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
 
 	fmt.Printf("Starting server on port 8080 \n")
 

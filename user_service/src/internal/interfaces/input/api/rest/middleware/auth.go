@@ -1,44 +1,74 @@
+// package middleware
+
+// import (
+// 	"net/http"
+// 	"task-management/user-service/src/internal/adaptors/persistance"
+// )
+
+// type AuthMiddleware struct {
+// 	userRepo persistance.UserRepo
+// }
+
+// func NewAuthMiddleware(userRepo persistance.UserRepo) *AuthMiddleware {
+// 	return &AuthMiddleware{userRepo: userRepo}
+// }
+
+// func (m *AuthMiddleware) Validate(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		cookie, err := r.Cookie("access_token")
+// 		if err != nil || cookie.Value == "" {
+// 			http.Error(w, "Unauthorized - No token cookie", http.StatusUnauthorized)
+// 			return
+// 		}
+
+// 		valid, err := m.userRepo.GetUserByToken(cookie.Value)
+// 		if err != nil || !valid {
+// 			http.Error(w, "Unauthorized - Invalid token", http.StatusUnauthorized)
+// 			return
+// 		}
+
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
+
 package middleware
 
 import (
-	"context"
 	"net/http"
 	"strings"
-	"task-management/user-service/src/pkg"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
-type contextKey string
+type AuthMiddleware struct {
+	secret string
+}
 
-const UserIDKey contextKey = "userID"
+func NewAuthMiddleware(secret string) *AuthMiddleware {
+	return &AuthMiddleware{secret: secret}
+}
 
-// AuthMiddleware validates JWT and sets userID in context
-func AuthMiddleware(next http.Handler) http.Handler {
+func (m *AuthMiddleware) Validate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			pkg.Error(w, http.StatusUnauthorized, "missing authorization header")
+		cookie, err := r.Cookie("auth_token") // Must match the cookie name you set
+		if err != nil || strings.TrimSpace(cookie.Value) == "" {
+			http.Error(w, "Unauthorized: missing token", http.StatusUnauthorized)
 			return
 		}
 
-		tokenParts := strings.Split(authHeader, " ")
-		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-			pkg.Error(w, http.StatusUnauthorized, "invalid authorization header format")
+		token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
+			// Validate the signing method
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrSignatureInvalid
+			}
+			return []byte(m.secret), nil
+		})
+
+		if err != nil || !token.Valid {
+			http.Error(w, "Unauthorized: invalid token", http.StatusUnauthorized)
 			return
 		}
 
-		token := tokenParts[1]
-
-		// Validate token and get claims
-		claims, err := pkg.VerifyJWT(token)
-		if err != nil {
-			pkg.Error(w, http.StatusUnauthorized, "invalid token")
-			return
-		}
-
-		// Extract userID from claims and put into context
-		userID := claims.UID
-
-		ctx := context.WithValue(r.Context(), UserIDKey, int64(userID))
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r)
 	})
 }

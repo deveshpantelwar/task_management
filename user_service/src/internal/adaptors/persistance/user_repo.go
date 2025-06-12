@@ -97,3 +97,18 @@ func (ur *UserRepo) UpdateUser(ctx context.Context, user *session.RegisterRespon
 
 	return nil
 }
+
+func (u *UserRepo) GetUserByToken(token string) (bool, error) {
+	var exists bool
+	err := u.db.db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1 FROM "users" WHERE access_token = $1
+		)
+	`, token).Scan(&exists)
+
+	if err != nil {
+		return false, fmt.Errorf("failed to validate token: %w", err)
+	}
+
+	return exists, nil
+}

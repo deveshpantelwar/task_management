@@ -2,7 +2,7 @@ package task
 
 import (
 	"context"
-	"task_service/src/internal/core/session"
+	"task_management/task_service/src/internal/core/session"
 )
 
 type Repository interface {

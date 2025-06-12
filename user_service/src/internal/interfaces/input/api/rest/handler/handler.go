@@ -64,6 +64,16 @@ func (u *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_token",
+		Value:    loginOutput.Token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   10 * 60 * 60, //10 hr
+	})
+
 	pkg.Success(w, loginOutput, "Login successful")
 }
 

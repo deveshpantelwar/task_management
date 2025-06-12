@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"task_service/src/internal/core/errors"
-	"task_service/src/internal/core/session"
-	"task_service/src/internal/usecase"
-	"task_service/src/pkg"
+	"task_management/task_service/src/internal/core/errors"
+	"task_management/task_service/src/internal/core/session"
+	"task_management/task_service/src/internal/usecase"
+	"task_management/task_service/src/pkg"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -77,8 +77,11 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message": "Task updated succesfully"}`))
+	// w.WriteHeader(http.StatusOK)
+	// w.Write([]byte(`{"message": "Task updated succesfully"}`))
+
+	pkg.Created(w, nil, "task updated successfully")
+
 }
 
 //-----------------------------------------------------------------------------------------------

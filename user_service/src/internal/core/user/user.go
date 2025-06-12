@@ -18,3 +18,4 @@ type Repository interface {
 	GetUserByID(ctx context.Context, uid int) (*session.RegisterResponse, error)
 	UpdateUser(ctx context.Context, user *session.RegisterResponse) error
 }
+

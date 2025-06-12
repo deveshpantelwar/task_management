@@ -6,17 +6,20 @@ import (
 	"task-management/user-service/src/internal/core/session"
 	"task-management/user-service/src/internal/core/user"
 	"task-management/user-service/src/pkg"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserService struct {
 	userRepo  user.Repository
-	secretKey string
+	jwtSecret string
 }
 
 func NewUserService(userRepo user.Repository, jwtSecret string) *UserService {
 	return &UserService{
 		userRepo:  userRepo,
-		secretKey: jwtSecret,
+		jwtSecret: jwtSecret,
 	}
 }
 
@@ -76,13 +79,17 @@ func (u *UserService) Login(ctx context.Context, input LoginInput) (*LoginOutput
 		return nil, errors.ErrInvalidCredentials
 	}
 
-	// Generate JWT token
-	token, err := pkg.GenerateJWT(u.secretKey, int(userData.UID))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": userData.UID,
+		"exp":     time.Now().Add(time.Hour * 24).Unix(), // 1 day expiry
+	})
+
+	tokenString, err := token.SignedString([]byte(u.jwtSecret))
 	if err != nil {
-		return nil, errors.ErrInternalServer
+		return &LoginOutput{}, err
 	}
 
-	return &LoginOutput{Token: token}, nil
+	return &LoginOutput{Token: tokenString}, nil
 }
 
 type UserOutput struct {

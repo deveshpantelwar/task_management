@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"task_service/src/internal/core/session"
+	"task_management/task_service/src/internal/core/session"
 	"time"
 )
 
