@@ -1,11 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"task_management/task_service/src/internal/adaptors/external"
+	"task_management/task_service/src/internal/config"
 
+	persistance "task_management/task_service/src/internal/adaptors/persistence/db"
 	"task_management/task_service/src/internal/adaptors/persistence/redis"
 	persistence "task_management/task_service/src/internal/adaptors/persistence/task_repo"
 	"task_management/task_service/src/internal/interfaces/input/api/rest/handler"
@@ -17,14 +18,19 @@ import (
 )
 
 func main() {
-	dsn := "host=localhost port=5432 user=postgres password=3695 dbname=taskmanagement sslmode=disable"
-	db, err := sql.Open("postgres", dsn)
+	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("failed to connect to DB: %v", err)
+		log.Fatalf("Could not load config: %v", err)
 	}
-	defer db.Close()
 
-	taskRepo := persistence.NewTaskRepo(db)
+	database, err := persistance.ConnectToDatabase(config)
+	if err != nil {
+		log.Fatalf("could not connect to database :- %v", err)
+	}
+
+	// defer db.Close()
+
+	taskRepo := persistence.NewTaskRepo(database.DB)
 	publisher := redis.NewRedisPublisher("localhost:6379", "")
 	taskUC := usecase.NewTaskUsecase(taskRepo, publisher)
 	taskHandler := handler.NewTaskHandler(taskUC)

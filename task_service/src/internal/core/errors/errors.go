@@ -5,6 +5,6 @@ import (
 )
 
 var (
-	
-	ErrTaskNotFound = errors.New("task not found")
+	ErrTaskNotFound   = errors.New("task not found")
+	ErrInternalServer = errors.New("Internal server error")
 )

@@ -77,9 +77,7 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(`{"message": "Task updated succesfully"}`))
-
+	
 	pkg.Created(w, nil, "task updated successfully")
 
 }

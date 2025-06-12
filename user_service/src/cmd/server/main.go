@@ -56,7 +56,7 @@ func main() {
 
 	fmt.Printf("Starting server on port 8080 \n")
 
-	err = http.ListenAndServe(port, router)
+	err = http.ListenAndServe(":8080", router)
 	if err != nil {
 		log.Fatalf("Failed to connect to server : %v", err)
 	}

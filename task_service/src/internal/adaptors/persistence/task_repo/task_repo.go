@@ -9,11 +9,11 @@ import (
 )
 
 type TaskRepo struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 func NewTaskRepo(db *sql.DB) *TaskRepo {
-	return &TaskRepo{db: db}
+	return &TaskRepo{DB: db}
 }
 
 func (r *TaskRepo) CreateTask(ctx context.Context, t *session.Task) error {
@@ -27,7 +27,7 @@ func (r *TaskRepo) CreateTask(ctx context.Context, t *session.Task) error {
 		assignedTo = sql.NullInt64{Int64: *t.AssignedTo, Valid: true}
 	}
 
-	return r.db.QueryRowContext(ctx, query,
+	return r.DB.QueryRowContext(ctx, query,
 		t.Title, t.Description, t.Status, t.Priority, assignedTo, time.Now(), time.Now(),
 	).Scan(&t.TaskID, &t.CreatedAt, &t.UpdatedAt)
 }
@@ -35,7 +35,7 @@ func (r *TaskRepo) CreateTask(ctx context.Context, t *session.Task) error {
 //----------------------------------------------------------------------------
 
 func (r *TaskRepo) UpdateTask(ctx context.Context, taskID int, task *session.Task) error {
-	_, err := r.db.ExecContext(ctx, `
+	_, err := r.DB.ExecContext(ctx, `
 	UPDATE tasks
 	SET status = $1, description = $2, priority = $3, updated_at = CURRENT_TIMESTAMP
 	WHERE task_id = $4
@@ -63,7 +63,7 @@ func (r *TaskRepo) ListTasks(ctx context.Context, assignedTo *int, status *strin
 		argIndex++
 	}
 
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	rows, err := r.DB.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (r *TaskRepo) ListTasks(ctx context.Context, assignedTo *int, status *strin
 //-------------------------------------------------------------------------------
 
 func (r *TaskRepo) MarkTaskCompleted(ctx context.Context, taskID int64) error {
-	result, err := r.db.ExecContext(ctx, `
+	result, err := r.DB.ExecContext(ctx, `
 		UPDATE tasks SET status = 'completed', updated_at = CURRENT_TIMESTAMP WHERE task_id = $1
 	`, taskID)
 	if err != nil {
