@@ -1,35 +1,3 @@
-// package middleware
-
-// import (
-// 	"net/http"
-// 	"task-management/user-service/src/internal/adaptors/persistance"
-// )
-
-// type AuthMiddleware struct {
-// 	userRepo persistance.UserRepo
-// }
-
-// func NewAuthMiddleware(userRepo persistance.UserRepo) *AuthMiddleware {
-// 	return &AuthMiddleware{userRepo: userRepo}
-// }
-
-// func (m *AuthMiddleware) Validate(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		cookie, err := r.Cookie("access_token")
-// 		if err != nil || cookie.Value == "" {
-// 			http.Error(w, "Unauthorized - No token cookie", http.StatusUnauthorized)
-// 			return
-// 		}
-
-// 		valid, err := m.userRepo.GetUserByToken(cookie.Value)
-// 		if err != nil || !valid {
-// 			http.Error(w, "Unauthorized - Invalid token", http.StatusUnauthorized)
-// 			return
-// 		}
-
-// 		next.ServeHTTP(w, r)
-// 	})
-// }
 
 package middleware
 
@@ -47,6 +15,7 @@ type AuthMiddleware struct {
 func NewAuthMiddleware(secret string) *AuthMiddleware {
 	return &AuthMiddleware{secret: secret}
 }
+
 
 func (m *AuthMiddleware) Validate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
