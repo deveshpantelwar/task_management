@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"task-management/user-service/src/internal/config"
-	"task-management/user-service/src/internal/core/errors"
+	errors "task-management/user-service/src/pkg/error"
 
 	_ "github.com/lib/pq"
 )

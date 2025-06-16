@@ -3,7 +3,6 @@ package grpcserver
 
 import (
 	"context"
-	"fmt"
 	userpb "task-management/user-service/src/internal/interfaces/input/grpc/user"
 	"task-management/user-service/src/internal/usecase"
 )
@@ -18,11 +17,11 @@ func NewUserGRPCServer(u *usecase.UserService) *UserGRPCServer {
 }
 
 func (s *UserGRPCServer) ValidateToken(ctx context.Context, req *userpb.ValidateTokenRequest) (*userpb.ValidateTokenResponse, error) {
-	fmt.Println("grpc req token : ", req.Token)
+	// fmt.Println("grpc req token : ", req.Token)
 	userID, err := s.usecase.ValidateToken(req.Token)
 
-	fmt.Println("grpc user id : ", userID)
-	fmt.Println("error : ", err)
+	// fmt.Println("grpc user id : ", userID)
+	// fmt.Println("error : ", err)
 	if err != nil {
 		return &userpb.ValidateTokenResponse{Valid: false}, nil
 	}

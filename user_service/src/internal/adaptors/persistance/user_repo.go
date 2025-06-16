@@ -3,8 +3,8 @@ package persistance
 import (
 	"context"
 	"fmt"
-	errors "task-management/user-service/src/internal/core/errors"
 	"task-management/user-service/src/internal/core/session"
+	errors "task-management/user-service/src/pkg/error"
 )
 
 type UserRepo struct {
