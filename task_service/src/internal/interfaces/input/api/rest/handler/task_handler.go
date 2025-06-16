@@ -7,7 +7,7 @@ import (
 	"task_management/task_service/src/internal/core/errors"
 	"task_management/task_service/src/internal/core/session"
 	"task_management/task_service/src/internal/usecase"
-	"task_management/task_service/src/pkg"
+	pkg "task_management/task_service/src/pkg/jsonResponse"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -77,7 +77,6 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	
 	pkg.Created(w, nil, "task updated successfully")
 
 }

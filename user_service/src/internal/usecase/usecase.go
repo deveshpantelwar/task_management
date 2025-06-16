@@ -2,13 +2,13 @@ package usecase
 
 import (
 	"context"
-	"task-management/user-service/src/internal/core/errors"
 	"task-management/user-service/src/internal/core/session"
 	"task-management/user-service/src/internal/core/user"
-	"task-management/user-service/src/pkg"
+	errors "task-management/user-service/src/pkg/error"
+	pkg "task-management/user-service/src/pkg/hashPassword"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type UserService struct {

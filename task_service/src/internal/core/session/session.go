@@ -1,6 +1,8 @@
 package session
 
-import "time"
+import (
+	"time"
+)
 
 type Task struct {
 	TaskID      int64     `json:"task_id"`

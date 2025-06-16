@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"task-management/user-service/src/internal/core/errors"
 	"task-management/user-service/src/internal/usecase"
-	"task-management/user-service/src/pkg"
+	errors "task-management/user-service/src/pkg/error"
+	pkg "task-management/user-service/src/pkg/jsonResponse"
 )
 
 type UserHandler struct {
