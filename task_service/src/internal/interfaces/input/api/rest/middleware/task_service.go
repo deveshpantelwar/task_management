@@ -19,7 +19,6 @@ func NewAuthMiddleware(client *external.UserServiceClient) *AuthMiddleware {
 func (a *AuthMiddleware) Validate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var token string
-		fmt.Println("Token being validated:", token)
 
 		// 1. Try Authorization header: "Bearer <token>"
 		authHeader := r.Header.Get("Authorization")
@@ -32,7 +31,6 @@ func (a *AuthMiddleware) Validate(next http.Handler) http.Handler {
 			cookie, err := r.Cookie("auth_token")
 			if err == nil {
 				token = cookie.Value
-				fmt.Println("Token from Cookie:", token)
 			}
 		}
 
@@ -44,7 +42,7 @@ func (a *AuthMiddleware) Validate(next http.Handler) http.Handler {
 
 		// 4. Validate token with user service (gRPC)
 		userID, valid := a.userClient.ValidateToken(token)
-		fmt.Println("Token valid:", valid, "UserID:", userID)
+		// fmt.Println("Token valid:", valid, "UserID:", userID)
 
 		if !valid {
 			http.Error(w, "Unauthorized - invalid token", http.StatusUnauthorized)

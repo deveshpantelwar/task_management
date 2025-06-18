@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"task_management/task_service/src/internal/adaptors/external"
 	"task_management/task_service/src/internal/config"
 
@@ -40,8 +41,19 @@ func main() {
 
 	r := routes.InitRoutes(taskHandler, authMiddleware)
 
-	log.Println("Task service running on :8081")
-	if err := http.ListenAndServe(":8081", r); err != nil {
+	// log.Println("Task service running on :8081")
+	// if err := http.ListenAndServe(":8081", r); err != nil {
+	// 	log.Fatalf("failed to start server: %v", err)
+	// }
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081" // fallback if not provided
+	}
+
+	log.Printf("Task service running on :%s\n", port)
+	if err := http.ListenAndServe(":"+port, r); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
+
 }

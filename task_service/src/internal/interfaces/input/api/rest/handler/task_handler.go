@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"task_management/task_service/src/internal/core/errors"
@@ -28,6 +29,9 @@ type createTaskRequest struct {
 }
 
 func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	
+	log.Println("🧿 [Handler] CreateTask hit by instance")
+
 	var req createTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)

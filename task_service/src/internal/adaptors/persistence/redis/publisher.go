@@ -33,6 +33,6 @@ func (p *RedisPublisher) Publish(ctx context.Context, channel string, message in
 		return err
 	}
 
-	log.Printf("Published to channel %s: %s", channel, data)
+	//log.Printf("Published to channel %s: %s", channel, data)
 	return nil
 }

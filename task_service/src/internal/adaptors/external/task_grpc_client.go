@@ -28,7 +28,7 @@ func (u *UserServiceClient) ValidateToken(token string) (string, bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	log.Println("Sending token to user_service via gRPC:", token)
+	// log.Println("Sending token to user_service via gRPC:", token)
 
 	req := &userpb.ValidateTokenRequest{Token: token}
 	res, err := u.client.ValidateToken(ctx, req)
@@ -37,7 +37,7 @@ func (u *UserServiceClient) ValidateToken(token string) (string, bool) {
 		return "", false
 	}
 
-	log.Printf("gRPC response from user_service: Valid=%v, UserID=%v", res.Valid, res.UserId)
+	//log.Printf("gRPC response from user_service: Valid=%v, UserID=%v", res.Valid, res.UserId)
 
 	if res.Valid {
 		return res.UserId, true
